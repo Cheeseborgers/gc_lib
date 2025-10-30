@@ -3,12 +3,12 @@
 #include <string.h>
 
 #define GC_STRIP_PREFIX
-#include "../gc_string_view.h"
-#include "../gc_hash_table.h"
-#include "../gc_string_builder.h"
-#include "../gc_filesystem.h"
-#include "../gc_logger.h"
-#include "../gc_time.h"
+#include "gc_string_view.h"
+#include "gc_hash_table.h"
+#include "gc_string_builder.h"
+#include "gc_filesystem.h"
+#include "gc_logger.h"
+#include "gc_time.h"
 
 // Type-safe string->size_t hash
 GC_HASH_DEFINE_SV(str_count, size_t)
@@ -27,7 +27,7 @@ int compare_freq_desc(const void *a, const void *b) {
 }
 
 int main(void) {
-    const char *file_path = "t8.shakespeare.txt";
+    const char *file_path = "assets/t8.shakespeare.txt";
     String_Builder buf = {0};
 
     GC_LOG_INFO("Analysing %s", file_path);

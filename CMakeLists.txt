@@ -8,7 +8,6 @@ option(BUILD_TESTS "Build test executables" ON)
 
 # --- Sources ---
 set(GC_LIB_SOURCES
-        src/library.c
         src/gc_logger.c
         src/gc_rb_tree.c
 )

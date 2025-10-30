@@ -14,8 +14,7 @@
 extern "C" {
 #endif
 
-// Example API function
-void gc_hello(void);
+// Add Stuff here
 
 #ifdef __cplusplus
 }
