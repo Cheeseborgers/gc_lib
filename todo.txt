@@ -1,1 +1,1 @@
-
+* Copy test assets on test builds
