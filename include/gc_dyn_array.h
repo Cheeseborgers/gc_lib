@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+#include "gc_common.h"
+
 /* -----------------------------------------------------------
  * GC Dynamic Array — a lightweight, type-agnostic, resizable array.
  *
@@ -54,78 +56,72 @@
 
 /* Helpers for static arrays */
 #define GC_ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
-#define GC_ARRAY_GET(array, index)                                          \
-  (GC_ASSERT((size_t)index < GC_ARRAY_LEN(array)), array[(size_t)index])
+#define GC_ARRAY_GET(array, index) (GC_ASSERT((size_t)index < GC_ARRAY_LEN(array)), array[(size_t)index])
 
 /* -------------------- Core dynamic array macros -------------------- */
 
 /* Reserve enough capacity for at least `expected_capacity` elements */
-#define gc_da_reserve(da, expected_capacity)                                   \
-  do {                                                                         \
-    if ((expected_capacity) > (da)->capacity) {                                \
-      if ((da)->capacity == 0) {                                               \
-        (da)->capacity = GC_INIT_CAP;                                       \
-      }                                                                        \
-      while ((expected_capacity) > (da)->capacity) {                           \
-        (da)->capacity *= 2;                                                   \
-      }                                                                        \
-      void *new_items =                                                        \
-          GC_REALLOC((da)->items, (da)->capacity * sizeof(*(da)->items));   \
-      GC_ASSERT(new_items != NULL &&                                        \
-                   "Out of memory: buy more RAM!");                             \
-      (da)->items = new_items;                                                 \
-    }                                                                          \
-  } while (0)
+#define gc_da_reserve(da, expected_capacity)                                                                                     \
+    do {                                                                                                                         \
+        if ((expected_capacity) > (da)->capacity) {                                                                              \
+            if ((da)->capacity == 0) {                                                                                           \
+                (da)->capacity = GC_INIT_CAP;                                                                                    \
+            }                                                                                                                    \
+            while ((expected_capacity) > (da)->capacity) {                                                                       \
+                (da)->capacity *= 2;                                                                                             \
+            }                                                                                                                    \
+            void *new_items = GC_REALLOC((da)->items, (da)->capacity * sizeof(*(da)->items));                                    \
+            GC_ASSERT(new_items != NULL && "Out of memory: buy more RAM!");                                                      \
+            (da)->items = new_items;                                                                                             \
+        }                                                                                                                        \
+    } while (0)
 
 /* Append a single item */
-#define gc_da_append(da, item)                                                 \
-  do {                                                                         \
-    gc_da_reserve((da), (da)->count + 1);                                      \
-    (da)->items[(da)->count++] = (item);                                       \
-  } while (0)
+#define gc_da_append(da, item)                                                                                                   \
+    do {                                                                                                                         \
+        gc_da_reserve((da), (da)->count + 1);                                                                                    \
+        (da)->items[(da)->count++] = (item);                                                                                     \
+    } while (0)
 
 /* Append multiple items from a buffer */
-#define gc_da_append_many(da, new_items, new_count)                            \
-  do {                                                                         \
-    gc_da_reserve((da), (da)->count + (new_count));                            \
-    memcpy((da)->items + (da)->count, (new_items),                             \
-           (new_count) * sizeof(*(da)->items));                                \
-    (da)->count += (new_count);                                                \
-  } while (0)
+#define gc_da_append_many(da, new_items, new_count)                                                                              \
+    do {                                                                                                                         \
+        gc_da_reserve((da), (da)->count + (new_count));                                                                          \
+        memcpy((da)->items + (da)->count, (new_items), (new_count) * sizeof(*(da)->items));                                      \
+        (da)->count += (new_count);                                                                                              \
+    } while (0)
 
 /* Resize to new size (does not initialize new elements) */
-#define gc_da_resize(da, new_size)                                             \
-  do {                                                                         \
-    gc_da_reserve((da), (new_size));                                           \
-    (da)->count = (new_size);                                                  \
-  } while (0)
+#define gc_da_resize(da, new_size)                                                                                               \
+    do {                                                                                                                         \
+        gc_da_reserve((da), (new_size));                                                                                         \
+        (da)->count = (new_size);                                                                                                \
+    } while (0)
 
 /* Get the last element */
-#define gc_da_last(da)                                                         \
-  ((da)->items[(GC_ASSERT((da)->count > 0), (da)->count - 1)])
+#define gc_da_last(da) ((da)->items[(GC_ASSERT((da)->count > 0), (da)->count - 1)])
 
 /* Remove element i by swapping with the last element (fast, unordered) */
-#define gc_da_remove_unordered(da, i)                                          \
-  do {                                                                         \
-    size_t __idx = (i);                                                        \
-    GC_ASSERT(__idx < (da)->count);                                         \
-    (da)->items[__idx] = (da)->items[--(da)->count];                           \
-  } while (0)
+#define gc_da_remove_unordered(da, i)                                                                                            \
+    do {                                                                                                                         \
+        size_t __idx = (i);                                                                                                      \
+        GC_ASSERT(__idx < (da)->count);                                                                                          \
+        (da)->items[__idx] = (da)->items[--(da)->count];                                                                         \
+    } while (0)
 
 /* Free the dynamic array */
-#define gc_da_free(da)                                                         \
-  do {                                                                         \
-    if ((da).items) {                                                          \
-      GC_FREE((da).items);                                                  \
-      (da).items = NULL;                                                       \
-    }                                                                          \
-    (da).count = 0;                                                            \
-    (da).capacity = 0;                                                         \
-  } while (0)
+#define gc_da_free(da)                                                                                                           \
+    do {                                                                                                                         \
+        if ((da).items) {                                                                                                        \
+            GC_FREE((da).items);                                                                                                 \
+            (da).items = NULL;                                                                                                   \
+        }                                                                                                                        \
+        (da).count = 0;                                                                                                          \
+        (da).capacity = 0;                                                                                                       \
+    } while (0)
 
 /* Foreach macro over array elements */
-#define gc_da_foreach(Type, it, da)                                            \
-  for (Type *it = (da)->items; it < (da)->items + (da)->count; ++it)
+#define gc_da_foreach(Type, it, da) for (Type *it = (da)->items; it < (da)->items + (da)->count; ++it)
 
 /* -------------------- Strip prefix macros -------------------- */
 #endif /* GC_DYNAMIC_ARRAY_H_ */

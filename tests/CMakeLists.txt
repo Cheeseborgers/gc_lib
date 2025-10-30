@@ -2,7 +2,8 @@
 set(TESTS
         hash_test
         rb_tree_test
-        main_test
+        dyn_array_test
+        string_builder_test
 )
 
 foreach(test_name IN LISTS TESTS)
