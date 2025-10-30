@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.0)
 
 project(gc_lib VERSION 1.0.0 DESCRIPTION "General C utility library" LANGUAGES C)
 

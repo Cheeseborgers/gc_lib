@@ -14,7 +14,8 @@
 extern "C" {
 #endif
 
-// Add Stuff here
+#include "gc_logger.h"
+#include "gc_common.h"
 
 #ifdef __cplusplus
 }

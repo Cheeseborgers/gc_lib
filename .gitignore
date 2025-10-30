@@ -52,6 +52,7 @@ CTestTestfile.cmake
 Thumbs.db
 
 # === CLion / JetBrains generated files ===
+.idea*
 .idea_modules/
 .idea/**/workspace.xml
 .idea/**/tasks.xml
